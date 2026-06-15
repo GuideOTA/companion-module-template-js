@@ -28,11 +28,14 @@ module.exports = {
 				regex: Regex.IP,
 			},
 			{
-				type: 'textinput',
-				id: 'port',
-				label: 'Port',
-				width: 3,
-				default: '23',
+			  type: 'number',
+			  id: 'port',
+			  label: 'Port',
+			  width: 3,
+			  default: 23,
+			  min: 1,
+			  max: 65535,
+			  required: true
 			},
 			{
 				type: 'static-text',

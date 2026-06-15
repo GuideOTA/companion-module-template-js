@@ -57,13 +57,24 @@ class ModuleInstance extends InstanceBase {
 	}
 	// When module gets deleted
 	async destroy() {
-		this.log('debug', 'destroy')
+		this.log('debug', 'Destroying module')
+  		if (this.socket) {
+  		  this.socket.removeAllListeners()
+  		  this.socket.destroy()
+  		  this.socket = null
+  		}
 	}
 
 	async configUpdated(config) {
-		this.config = config
-		// Reinitialize the connection with the updated configuration
-		await this.initConnection()
+		const reconnectNeeded =
+	    	config.host !== this.config.host ||
+	    	config.port !== this.config.port
+		
+	  this.config = config
+		
+	  if (reconnectNeeded) {
+	    await this.initConnection()
+	  }
 	}
 
 	// Return config fields for web config
@@ -94,11 +105,14 @@ class ModuleInstance extends InstanceBase {
 					regex: Regex.IP,
 				},
 				{
-					type: 'textinput',
-					id: 'port',
-					label: 'Port',
-					width: 3,
-					default: '23',
+				  type: 'number',
+				  id: 'port',
+				  label: 'Port',
+				  width: 3,
+				  default: 23,
+				  min: 1,
+				  max: 65535,
+				  required: true
 				},
 				{
 					type: 'static-text',
